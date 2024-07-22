@@ -1,4 +1,4 @@
-class ProductManager {
+export default class ProductManager {
   constructor() {
     this.products = [];
   }
