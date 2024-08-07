@@ -1,0 +1,16 @@
+[
+     {
+          "id": 2,
+          "title": "Nuevo Producto2",
+          "description": "Descripción del producto",
+          "code": "ABC123",
+          "price": 99.99,
+          "status": true,
+          "stock": 10,
+          "category": "Categoría 1",
+          "thumbnails": [
+               "thumbnail1.jpg",
+               "thumbnail2.jpg"
+          ]
+     }
+]
