@@ -66,15 +66,13 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  let { title, description, code, price, status, stock, category, thumbnails } =
+  let { title, description, code, price, stock, category, thumbnails } =
     req.body;
-  // Acordarme de agregar el status
   if (
     !title ||
     !description ||
     !code ||
     price === undefined ||
-    !status ||
     stock === undefined ||
     !category
   ) {
@@ -90,7 +88,6 @@ router.post("/", async (req, res) => {
     typeof code !== "string" ||
     typeof price !== "number" ||
     price < 0 ||
-    typeof status !== "boolean" ||
     typeof stock !== "number" ||
     stock < 0 ||
     typeof category !== "string" ||
@@ -109,7 +106,6 @@ router.post("/", async (req, res) => {
       description,
       code,
       price,
-      status,
       stock,
       category,
       thumbnails,
