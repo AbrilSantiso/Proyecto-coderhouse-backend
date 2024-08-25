@@ -60,5 +60,11 @@ static async deleteProduct(id){
 
   return cantidad0-cantidad1
 }
+
+static async getProductByTitle(title) {
+  let products = await this.getProducts();
+  return products.find(product => product.title === title) || null;
+}
+
 }
 

@@ -102,6 +102,15 @@ export default (io) => {
     }
 
     try {
+      // Agrego verificación para que no sea posible agregar un producto con un nombre ya existente
+      const existingProduct = await ProductsManager.getProductByTitle(title);
+      if (existingProduct) {
+        res.setHeader("Content-Type", "application/json");
+        return res.status(400).json({
+          error: `El producto con el nombre '${title}' ya existe. Por favor, elija un nombre diferente.`,
+        });
+      }
+
       let newProduct = await ProductsManager.addProduct({
         title,
         description,

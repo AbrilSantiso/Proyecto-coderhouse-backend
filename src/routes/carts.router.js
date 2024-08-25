@@ -38,7 +38,7 @@ router.get("/:id", async (req, res) => {
    const products = await ProductsManager.getProducts();
     cart.products.forEach((cartProduct)=>{
        let product = products.find((p) => p.id === cartProduct.product);
-        cartProducts.push(product ? {...product, quantity: cartProduct.quantity} : {id: cartProduct.product, description: "El producto ya no existe"})
+        cartProducts.push(product ? {id: cartProduct.product, quantity: cartProduct.quantity} : {id: cartProduct.product, description: "El producto ya no existe"})
     })
    
   } catch (error) {
