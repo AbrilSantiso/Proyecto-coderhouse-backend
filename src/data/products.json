@@ -1,16 +1,43 @@
 [
      {
           "id": 2,
-          "title": "Nuevo Producto2",
-          "description": "Descripción del producto",
+          "title": "Pava electrica",
+          "description": "Pava Eléctrica Mega Express Me-621 Acero Inoxidable 220v 1.8l",
           "code": "ABC123",
-          "price": 99.99,
+          "price": 1860,
           "status": true,
           "stock": 10,
-          "category": "Categoría 1",
+          "category": "Electrodomesticos",
           "thumbnails": [
-               "thumbnail1.jpg",
-               "thumbnail2.jpg"
+               "https://http2.mlstatic.com/D_NQ_NP_2X_999838-MLU70044950212_062023-F.webp",
+               "https://http2.mlstatic.com/D_NQ_NP_2X_967556-MLU70044950256_062023-F.webp"
           ]
+     },
+     {
+          "id": 3,
+          "title": "Juguera electrica",
+          "description": "Juguera Eléctrica Extractor Suono Exprimidor Snpe-2002",
+          "code": "ABC124",
+          "price": 19453,
+          "status": true,
+          "stock": 25,
+          "category": "Electrodomesticos",
+          "thumbnails": [
+               "https://http2.mlstatic.com/D_NQ_NP_2X_895299-MLA71520067376_092023-F.webp",
+               "https://http2.mlstatic.com/D_NQ_NP_2X_726608-MLA71520067386_092023-F.webp"
+          ]
+     },
+     {
+          "id": 13,
+          "title": "Mini Pimer",
+          "description": "Mini Pimer Mixer Licuadora De Mano 4 En 1 500 Watt Hytoshy Wk-1710-4 220v Negro",
+          "code": "ABC125",
+          "price": 99.99,
+          "stock": 14,
+          "category": "Electrodomesticos",
+          "thumbnails": [
+               "https://http2.mlstatic.com/D_NQ_NP_2X_850379-MLA46467029309_062021-F.webp"
+          ],
+          "status": true
      }
 ]

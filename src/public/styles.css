@@ -1,0 +1,65 @@
+/* styles.css */
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.title {
+    text-align: center;
+    color: #333;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: #ddd;
+    margin: 20px 0;
+}
+
+.product-list {
+    list-style: none;
+    padding: 0;
+}
+
+.product-item {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.product-title {
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.product-description,
+.product-price,
+.product-stock {
+    margin: 0 0 10px;
+}
+
+.product-thumbnails {
+    margin-top: 10px;
+}
+
+.thumbnail {
+    width: 200px;
+    height: 200px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
