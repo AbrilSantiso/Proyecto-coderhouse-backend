@@ -1,21 +1,51 @@
-<div class="container">
-  <h2 class="title">Productos:</h2>
-  <hr class="divider" />
-  <ul class="product-list" id="products-list">
-    {{#each products}}
-      <li class="product-item">
-        <h3 class="product-title">{{this.title}}</h3>
-        <p class="product-description"><strong>{{this.description}}</strong></p>
-        <p class="product-price">Precio: ${{this.price}}</p>
-        <p class="product-stock">Stock: {{this.stock}} unidades</p>
-        <div class="product-thumbnails">
-          {{#each this.thumbnails}}
-            <img src="{{this}}" alt="Imagen de producto" class="thumbnail" />
-          {{/each}}
+<div class="product-list">
+    <h2>Productos:</h2>
+    <hr class="divider" />
+    <ul class="product-list" id="products-list">
+        {{#each products}}
+        <li class="product-item" id={{this.id}}>
+            <button class="delete-button" onclick="deleteProduct('{{this.id}}')">Eliminar</button>
+            <h3 class="product-title">{{this.title}}</h3>
+            <p class="product-description"><strong>{{this.description}}</strong></p>
+            <p class="product-price">Precio: ${{this.price}}</p>
+            <p class="product-stock">Stock: {{this.stock}} unidades</p>
+            <div class="product-thumbnails">
+                {{#each this.thumbnails}}
+                <img src="{{this}}" alt="Imagen de producto" class="thumbnail" />
+                {{/each}}
+            </div>
+        </li>
+        {{/each}}
+    </ul>
+    <div class="product-container"></div>
+</div>
+
+<div class="product-management">
+    <div class="product-add">
+        <h2>Agregar Producto</h2>
+        <div class="add-form">
+            <input id="new-title" type="text" placeholder="Titulo">
+            <input id="new-description" type="text" placeholder="Descripcion">
+            <input id="new-price" type="number" placeholder="Precio">
+            <input id="new-code" type="text" placeholder="Codigo">
+            <input id="new-stock" type="number" placeholder="Stock">
+            <input id="new-category" type="text" placeholder="Categoria">
+            <button id="submit-add" onclick="addProduct()">Agregar Nuevo Producto</button>
         </div>
-      </li>
-    {{/each}}
-  </ul>
+    </div>
+    <div class="product-update">
+        <h2>Modificar Producto</h2>
+        <div class="update-form">
+            <input id="edit-id" type="text" placeholder="ID Producto a Modificar">
+            <input id="edit-title" type="text" placeholder="Titulo">
+            <input id="edit-description" type="text" placeholder="Descripcion">
+            <input id="edit-price" type="number" placeholder="Precio">
+            <input id="edit-code" type="text" placeholder="Codigo">
+            <input id="edit-stock" type="number" placeholder="Stock">
+            <input id="edit-category" type="text" placeholder="Categoria">
+            <button id="submit-update" onclick="updateProduct()">Modificar Producto</button>
+        </div>
+    </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/products.js"></script>

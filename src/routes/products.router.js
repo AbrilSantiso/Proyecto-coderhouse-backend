@@ -91,9 +91,9 @@ export default (io) => {
       price < 0 ||
       typeof stock !== "number" ||
       stock < 0 ||
-      typeof category !== "string" ||
+      typeof category !== "string" /*||
       !Array.isArray(thumbnails) ||
-      !thumbnails.every((item) => typeof item === "string")
+      !thumbnails.every((item) => typeof item === "string")*/
     ) {
       res.setHeader("Content-Type", "application/json");
       return res.status(400).json({
@@ -123,8 +123,8 @@ export default (io) => {
       });
 
       // Si el producto se agrega con exito vamos a emitir un evento para que se actualicen los productos en tiempo real
-      const products = await ProductsManager.getProducts();
-      io.emit("productsUpdate", products);
+
+      io.emit("nuevo-producto", newProduct);
 
       res.setHeader("Content-Type", "application/json");
       return res.status(200).json({ newProduct });
@@ -138,6 +138,7 @@ export default (io) => {
   });
 
   router.put("/:id", async (req, res) => {
+    console.log(req.body, "req.body")
     let { id } = req.params;
     id = Number(id);
     if (isNaN(id)) {
@@ -175,6 +176,7 @@ export default (io) => {
         productToUpdate
       );
       res.setHeader("Content-Type", "application/json");
+      io.emit("modificar-producto", updatedProduct,  id);
       return res.status(200).json({ updatedProduct });
     } catch (error) {
       res.setHeader("Content-Type", "application/json");
@@ -217,8 +219,7 @@ export default (io) => {
       let result = await ProductsManager.deleteProduct(id);
       if (result > 0) {
         // Si el producto se elimina con exito vamos a emitir un evento para que se actualicen los productos en tiempo real sin el producto eliminado
-        const products = await ProductsManager.getProducts();
-        io.emit("productsUpdate", products);
+        io.emit("eliminar-producto", id);
         res.setHeader("Content-Type", "application/json");
         return res
           .status(200)
