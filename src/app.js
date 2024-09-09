@@ -5,9 +5,11 @@ import homeRouter from "./routes/home.router.js"
 import realTimeProductsRouter from "./routes/realTimeProducts.router.js"
 import {engine} from "express-handlebars"
 import {Server} from "socket.io"
+import { config } from './config/config.js';
+import { connDB } from './connDB.js';
 
 
-const PORT=8080;
+const PORT=config.PORT;
 
 const app=express();
 
@@ -38,3 +40,4 @@ io.on("connection", (socket) => {
 
 });
 
+connDB()
