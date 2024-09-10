@@ -141,4 +141,204 @@ router.post("/:cid/product/:pid", async (req, res) => {
   }
 });
 
+router.delete("/:cid/products/:pid", async (req, res) => {
+  let { cid, pid } = req.params;
+  cid = Number(cid);
+  pid = Number(pid);
+  if (isNaN(cid) || isNaN(pid)) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `El parametro id debe ser de tipo numerico` });
+  }
+
+  let carts;
+  try {
+    carts = await CartsManager.getCarts();
+
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible eliminar el producto al carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+  let cart = carts.find((c) => c.id === cid);
+  if (!cart) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `No existe ningún carrito con el id ${cid}` });
+  }
+  
+
+  const productExistsInCart = cart.products.some((product)=>product.product === pid)
+  if(productExistsInCart){
+    cart.products = cart.products.filter((product)=>product.product !== pid )
+  }else{
+    cart.products = [...cart.products, {product: pid, quantity: 1}]
+  }
+
+  try {
+    let updatedcart = await CartsManager.updateCart(
+      cid,
+      cart
+    );
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json({ updatedcart });
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible actualizar el carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+});
+
+router.put("/:cid", async (req, res) => {
+  let { cid} = req.params;
+  let { products} = req.body;
+  cid = Number(cid);
+  if (isNaN(cid) ) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `El parametro id debe ser de tipo numerico` });
+  }
+
+  let carts;
+  try {
+    carts = await CartsManager.getCarts();
+
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible agregar el producto al carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+  let cart = carts.find((c) => c.id === cid);
+  if (!cart) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `No existe ningún carrito con el id ${cid}` });
+  }
+  cart.products = products
+  try {
+    let updatedcart = await CartsManager.updateCart(
+      cid,
+      cart
+    );
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json({ updatedcart });
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible actualizar el carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+});
+
+router.put("/:cid/products/:pid", async (req, res) => {
+  let { cid, pid } = req.params;
+  let { quantity } = req.body;
+  cid = Number(cid);
+  pid = Number(pid);
+  if (isNaN(cid) || isNaN(pid)) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `El parametro id debe ser de tipo numerico` });
+  }
+
+  let carts;
+  try {
+    carts = await CartsManager.getCarts();
+
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible agregar el producto al carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+  let cart = carts.find((c) => c.id === cid);
+  if (!cart) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `No existe ningún carrito con el id ${cid}` });
+  }
+  
+  const productExistsInCart = cart.products.some((product)=>product.product === pid)
+  if(productExistsInCart){
+    cart.products = cart.products.map((product)=>product.product === pid ? {...product, quantity: quantity }: product)
+  }else{
+    cart.products = [...cart.products, {product: pid, quantity: 1}]
+  }
+
+  try {
+    let updatedcart = await CartsManager.updateCart(
+      cid,
+      cart
+    );
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json({ updatedcart });
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible actualizar el carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+});
+
+router.delete("/:cid", async (req, res) => {
+  let { cid} = req.params;
+  cid = Number(cid);
+  if (isNaN(cid)) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `El parametro id debe ser de tipo numerico` });
+  }
+
+  let carts;
+  try {
+    carts = await CartsManager.getCarts();
+
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible eliminar el producto al carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+  let cart = carts.find((c) => c.id === cid);
+  if (!cart) {
+    res.setHeader("Content-Type", "application/json");
+    return res
+      .status(400)
+      .json({ error: `No existe ningún carrito con el id ${cid}` });
+  }
+  
+ cart.products = []
+  try {
+    let updatedcart = await CartsManager.updateCart(
+      cid,
+      cart
+    );
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json({ updatedcart });
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      error: `No fue posible actualizar el carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
+      detalle: `${error.message}`,
+    });
+  }
+});
+
 export default router;

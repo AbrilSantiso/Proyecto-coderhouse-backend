@@ -1,14 +1,15 @@
 import  fs  from "fs";
+import { productsModel } from "./models/productModel.js";
 
 export default class ProductsManager {
   static path
 
-  static async getProducts(page=1, limit=10, sort, query){
-    return await productsModel.paginate({}, {lean:true, page, limit})
+  static async getProducts(page=1, limit=10, sort={}, query={}){
+    return await productsModel.paginate(query, {lean:true, page, limit, sort: sort})
 }
 
 static async getBy(filter={}){
-    return await productsModel.findOne(filter) 
+    return await productsModel.findOne(filter).lean()
 }
 
 static async addProduct(product={}){
@@ -47,7 +48,7 @@ static async deleteProduct(id){
 
 static async getProductByTitle(title) {
   let products = await this.getProducts();
-  return products.find(product => product.title === title) || null;
+  return products.docs.find(product => product.title === title) || null;
 }
 
 }

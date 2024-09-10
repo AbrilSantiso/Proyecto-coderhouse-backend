@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProductsManager from "../dao/ProductsManager.js";
+import ProductsManager from "../dao/ProductsManager2.js";
 
 const router = Router();
 
@@ -8,8 +8,10 @@ ProductsManager.path = "./src/data/products.json";
 export default (io) => {
   router.get("/", async (req, res) => {
     let products;
+   const {limit, page, sort, query} = req.query
+   console.log(limit)
     try {
-      products = await ProductsManager.getProducts();
+      products = await ProductsManager.getProducts(page, limit, sort === "asc" ? {price: 1}: {price: -1}, query);
     } catch (error) {
       res.setHeader("Content-Type", "application/json");
       return res.status(500).json({
@@ -17,20 +19,19 @@ export default (io) => {
         detalle: `${error.message}`,
       });
     }
-    let { limit } = req.query;
-    if (limit) {
-      limit = Number(limit);
-      if (isNaN(limit)) {
-        res.setHeader("Content-Type", "application/json");
-        return res
-          .status(400)
-          .json({ error: `El argumento limit tiene que ser de tipo numerico` });
-      }
-    } else {
-      limit = products.length;
+   
+    let result = {
+      status: products.totalDocs > 0 ? "success" : "error",
+      payload: products.docs,
+      totalPages: products.totalPages,
+      prevPage: products.prevPage,
+      nextPage: products.nextPage,
+      page: products.page,
+      hasPrevPage: products.hasPrevPage,
+      hasNextPage: products.hasNextPage,
+      prevLink: products.hasPrevPage ? `http://localhost:8080/products?page=${products.prevPage}` : null,
+      nextLink: products.hasNextPage ? `http://localhost:8080/products?page=${products.nextPage}` : null,
     }
-
-    let result = products.slice(0, limit);
 
     res.setHeader("Content-Type", "application/json");
     return res.status(200).json({ result });
