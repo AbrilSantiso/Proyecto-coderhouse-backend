@@ -1,6 +1,8 @@
 import { Router } from "express";
-import CartsManager from "../dao/CartsManager.js";
-import ProductsManager from "../dao/ProductsManager.js";
+import CartsManager from "../dao/CartsManager2.js";
+import ProductsManager from "../dao/ProductsManager2.js";
+import { isValidObjectId } from 'mongoose';
+
 const router = Router();
 
 CartsManager.path = "./src/data/carts.json";
@@ -9,16 +11,15 @@ ProductsManager.path = "./src/data/products.json";
 
 router.get("/:id", async (req, res) => {
   let { id } = req.params;
-  id = Number(id);
-  if (isNaN(id)) {
+  if (!isValidObjectId(id)) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
-      .json({ error: `El parametro id debe ser de tipo numerico` });
+      .json({ error: `El id no es válido` });
   }
-  let carts;
+  let cart;
   try {
-    carts = await CartsManager.getCarts();
+    cart = await CartsManager.getCart(id);
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
     return res.status(500).json({
@@ -26,31 +27,15 @@ router.get("/:id", async (req, res) => {
       detalle: `${error.message}`,
     });
   }
-  let cart = carts.find((c) => c.id === id);
   if (!cart) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
       .json({ error: `No existe ningún carrito con el id ${id}` });
   }
-  const cartProducts = []
-  try {
-   const products = await ProductsManager.getProducts();
-    cart.products.forEach((cartProduct)=>{
-       let product = products.find((p) => p.id === cartProduct.product);
-        cartProducts.push(product ? {id: cartProduct.product, quantity: cartProduct.quantity} : {id: cartProduct.product, description: "El producto ya no existe"})
-    })
-   
-  } catch (error) {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(500).json({
-      error: `No fue posible obtener los productos del carrito debido a un error inesperado en el servidor. Intentelo más tarde`,
-      detalle: `${error.message}`,
-    });
-  }
  
   res.setHeader("Content-Type", "application/json");
-  return res.status(200).json({ payload: cartProducts });
+  return res.status(200).json({ payload: cart });
 });
 
 router.post("/", async (req, res) => {
@@ -71,18 +56,17 @@ router.post("/", async (req, res) => {
 
 router.post("/:cid/product/:pid", async (req, res) => {
   let { cid, pid } = req.params;
-  cid = Number(cid);
-  pid = Number(pid);
-  if (isNaN(cid) || isNaN(pid)) {
+
+  if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
-      .json({ error: `El parametro id debe ser de tipo numerico` });
+      .json({ error: `El id no es válido` });
   }
 
-  let carts;
+  let cart;
   try {
-    carts = await CartsManager.getCarts();
+    cart = await CartsManager.getCart(cid);
 
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
@@ -91,7 +75,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
       detalle: `${error.message}`,
     });
   }
-  let cart = carts.find((c) => c.id === cid);
+
   if (!cart) {
     res.setHeader("Content-Type", "application/json");
     return res
@@ -110,7 +94,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
       detalle: `${error.message}`,
     });
   }
-  let product = products.find((p) => p.id === pid);
+  let product = products.docs.find((p) => p.id === pid);
   if (!product) {
     res.setHeader("Content-Type", "application/json");
     return res
@@ -118,9 +102,10 @@ router.post("/:cid/product/:pid", async (req, res) => {
       .json({ error: `No existe ningún producto con el id ${cid}` });
   }
 
-  const productExistsInCart = cart.products.some((product)=>product.product === pid)
+  console.log(cart.products)
+  const productExistsInCart = cart.products.some((product)=>product.product._id.toHexString() === pid)
   if(productExistsInCart){
-    cart.products = cart.products.map((product)=>product.product === pid ? {...product, quantity:product.quantity +1}: product)
+    cart.products = cart.products.map((product)=>product.product._id.toHexString()  === pid ? {...product, quantity:product.quantity +1}: product)
   }else{
     cart.products = [...cart.products, {product: pid, quantity: 1}]
   }
@@ -143,18 +128,17 @@ router.post("/:cid/product/:pid", async (req, res) => {
 
 router.delete("/:cid/products/:pid", async (req, res) => {
   let { cid, pid } = req.params;
-  cid = Number(cid);
-  pid = Number(pid);
-  if (isNaN(cid) || isNaN(pid)) {
+
+  if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
-      .json({ error: `El parametro id debe ser de tipo numerico` });
+      .json({ error: `El id no es válido` });
   }
 
-  let carts;
+  let cart;
   try {
-    carts = await CartsManager.getCarts();
+    cart = await CartsManager.getCart(cid);
 
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
@@ -163,7 +147,6 @@ router.delete("/:cid/products/:pid", async (req, res) => {
       detalle: `${error.message}`,
     });
   }
-  let cart = carts.find((c) => c.id === cid);
   if (!cart) {
     res.setHeader("Content-Type", "application/json");
     return res
@@ -172,11 +155,9 @@ router.delete("/:cid/products/:pid", async (req, res) => {
   }
   
 
-  const productExistsInCart = cart.products.some((product)=>product.product === pid)
+  const productExistsInCart = cart.products.some((product)=>product.product._id.toHexString()  === pid)
   if(productExistsInCart){
-    cart.products = cart.products.filter((product)=>product.product !== pid )
-  }else{
-    cart.products = [...cart.products, {product: pid, quantity: 1}]
+    cart.products = cart.products.filter((product)=>product.product._id.toHexString()  !== pid)
   }
 
   try {
@@ -198,17 +179,16 @@ router.delete("/:cid/products/:pid", async (req, res) => {
 router.put("/:cid", async (req, res) => {
   let { cid} = req.params;
   let { products} = req.body;
-  cid = Number(cid);
-  if (isNaN(cid) ) {
+  if (!isValidObjectId(cid) ) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
-      .json({ error: `El parametro id debe ser de tipo numerico` });
+      .json({ error: `El id no es válido` });
   }
 
-  let carts;
+  let cart;
   try {
-    carts = await CartsManager.getCarts();
+    cart = await CartsManager.getCart(cid);
 
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
@@ -217,14 +197,14 @@ router.put("/:cid", async (req, res) => {
       detalle: `${error.message}`,
     });
   }
-  let cart = carts.find((c) => c.id === cid);
   if (!cart) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
       .json({ error: `No existe ningún carrito con el id ${cid}` });
   }
-  cart.products = products
+
+  cart.products = [...cart.products, ...products]
   try {
     let updatedcart = await CartsManager.updateCart(
       cid,
@@ -244,18 +224,17 @@ router.put("/:cid", async (req, res) => {
 router.put("/:cid/products/:pid", async (req, res) => {
   let { cid, pid } = req.params;
   let { quantity } = req.body;
-  cid = Number(cid);
-  pid = Number(pid);
-  if (isNaN(cid) || isNaN(pid)) {
+
+  if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
-      .json({ error: `El parametro id debe ser de tipo numerico` });
+      .json({ error: `El id no es válido` });
   }
 
-  let carts;
+  let cart;
   try {
-    carts = await CartsManager.getCarts();
+    cart = await CartsManager.getCart(cid);
 
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
@@ -264,7 +243,6 @@ router.put("/:cid/products/:pid", async (req, res) => {
       detalle: `${error.message}`,
     });
   }
-  let cart = carts.find((c) => c.id === cid);
   if (!cart) {
     res.setHeader("Content-Type", "application/json");
     return res
@@ -272,9 +250,9 @@ router.put("/:cid/products/:pid", async (req, res) => {
       .json({ error: `No existe ningún carrito con el id ${cid}` });
   }
   
-  const productExistsInCart = cart.products.some((product)=>product.product === pid)
+  const productExistsInCart = cart.products.some((product)=>product.product._id.toHexString()  === pid)
   if(productExistsInCart){
-    cart.products = cart.products.map((product)=>product.product === pid ? {...product, quantity: quantity }: product)
+    cart.products = cart.products.map((product)=>product.product._id.toHexString()  === pid ? {...product, quantity: quantity }: product)
   }else{
     cart.products = [...cart.products, {product: pid, quantity: 1}]
   }
@@ -297,17 +275,16 @@ router.put("/:cid/products/:pid", async (req, res) => {
 
 router.delete("/:cid", async (req, res) => {
   let { cid} = req.params;
-  cid = Number(cid);
-  if (isNaN(cid)) {
+  if (!isValidObjectId(cid)) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(400)
-      .json({ error: `El parametro id debe ser de tipo numerico` });
+      .json({ error: `El id no es válido` });
   }
 
-  let carts;
+  let cart;
   try {
-    carts = await CartsManager.getCarts();
+    cart = await CartsManager.getCart(cid);
 
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
@@ -316,7 +293,6 @@ router.delete("/:cid", async (req, res) => {
       detalle: `${error.message}`,
     });
   }
-  let cart = carts.find((c) => c.id === cid);
   if (!cart) {
     res.setHeader("Content-Type", "application/json");
     return res

@@ -16,6 +16,17 @@
       </li>
     {{/each}}
   </ul>
+<div class="pagination">
+  {{#if data.prevPage}}
+    <button id="prev-page" onclick="goToPage('{{data.prevLink}}')">Anterior</button>
+  {{/if}}
+
+  <span id="page-info">Página {{data.page}} de {{data.totalPages}}</span>
+
+  {{#if data.nextPage}}
+    <button id="next-page"  onclick="goToPage('{{data.prevLink}}')">Siguiente</button>
+  {{/if}}
+</div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/home.js"></script>

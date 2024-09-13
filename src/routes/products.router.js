@@ -1,9 +1,9 @@
 import { Router } from "express";
 import ProductsManager from "../dao/ProductsManager2.js";
+import { isValidObjectId } from 'mongoose';
+
 
 const router = Router();
-
-ProductsManager.path = "./src/data/products.json";
 
 export default (io) => {
   router.get("/", async (req, res) => {
@@ -39,12 +39,11 @@ export default (io) => {
 
   router.get("/:id", async (req, res) => {
     let { id } = req.params;
-    id = Number(id);
-    if (isNaN(id)) {
+    if (!isValidObjectId(id)) {
       res.setHeader("Content-Type", "application/json");
       return res
         .status(400)
-        .json({ error: `El parametro id debe ser de tipo numerico` });
+        .json({ error: `El id no es válido` });
     }
     let products;
     try {
@@ -56,7 +55,7 @@ export default (io) => {
         detalle: `${error.message}`,
       });
     }
-    let product = products.find((p) => p.id === id);
+    let product = products.docs.find((p) => p.id === id);
     if (!product) {
       res.setHeader("Content-Type", "application/json");
       return res
@@ -139,14 +138,12 @@ export default (io) => {
   });
 
   router.put("/:id", async (req, res) => {
-    console.log(req.body, "req.body")
     let { id } = req.params;
-    id = Number(id);
-    if (isNaN(id)) {
+    if (!isValidObjectId(id)) {
       res.setHeader("Content-Type", "application/json");
       return res
         .status(400)
-        .json({ error: `El parametro id debe ser de tipo numerico` });
+        .json({ error: `El id no es válido` });
     }
 
     let products;
@@ -159,7 +156,7 @@ export default (io) => {
         detalle: `${error.message}`,
       });
     }
-    let product = products.find((p) => p.id === id);
+    let product = products.docs.find((p) => p.id === id);
     if (!product) {
       res.setHeader("Content-Type", "application/json");
       return res
@@ -190,12 +187,11 @@ export default (io) => {
 
   router.delete("/:id", async (req, res) => {
     let { id } = req.params;
-    id = Number(id);
-    if (isNaN(id)) {
+    if (!isValidObjectId(id)) {
       res.setHeader("Content-Type", "application/json");
       return res
         .status(400)
-        .json({ error: `El parametro id debe ser de tipo numerico` });
+        .json({ error: `El id no es válido` });
     }
 
     let products;
@@ -208,7 +204,7 @@ export default (io) => {
         detalle: `${error.message}`,
       });
     }
-    let product = products.find((p) => p.id === id);
+    let product = products.docs.find((p) => p.id === id);
     if (!product) {
       res.setHeader("Content-Type", "application/json");
       return res
@@ -218,7 +214,8 @@ export default (io) => {
 
     try {
       let result = await ProductsManager.deleteProduct(id);
-      if (result > 0) {
+      console.log(result)
+      if (result !== null) {
         // Si el producto se elimina con exito vamos a emitir un evento para que se actualicen los productos en tiempo real sin el producto eliminado
         io.emit("eliminar-producto", id);
         res.setHeader("Content-Type", "application/json");

@@ -23,6 +23,14 @@ cartSchema.pre("findOne", function(){
     this.populate("products.product").lean()
 })
 
+cartSchema.pre("findByIdAndUpdate", function(){
+    this.populate("products.product").lean()
+})
+
+cartSchema.pre("find", function(){
+    this.populate("products.product").lean()
+})
+
 export const cartsModel=mongoose.model(
     "carts", cartSchema
 )

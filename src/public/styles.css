@@ -163,3 +163,33 @@ button:hover {
 .product-item:last-child {
     border-bottom: none;
 }
+
+  /* Estilo para los botones de paginación */
+
+.pagination {
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+    margin-top: 20px;       
+  }
+  
+  .pagination button {
+    background-color: #007bff; 
+    color: white;              
+    border: none;              
+    padding: 10px 20px;        
+    margin: 0 5px;             
+    border-radius: 4px;        
+    cursor: pointer;           
+    font-size: 16px;           
+    transition: background-color 0.3s; 
+  }
+  
+  .pagination button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;       
+  }
+  
+  .pagination button:hover:not(:disabled) {
+    background-color: #0056b3; 
+  }
