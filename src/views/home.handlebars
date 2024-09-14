@@ -1,6 +1,19 @@
 <div class="container">
   <h2 class="title">Productos:</h2>
   <hr class="divider" />
+    <div class="filters">
+    <div class="filter-group">
+      <span>Filtrar por precio:</span>
+      <button class="filter-button" id="price-asc" onclick="filterByPrice('asc')">Precio Ascendente</button>
+      <button class="filter-button" id="price-desc" onclick="filterByPrice('desc')">Precio Descendente</button>
+    </div>
+
+    <div class="filter-group">
+      <span>Filtrar por categoría:</span>
+      <button class="filter-button" id="category-electrodomesticos" onclick="filterByCategory('Electrodomesticos')">Electrodomesticos</button>
+      <button class="filter-button" id="category-indumentaria" onclick="filterByCategory('Indumentaria')">Indumentaria</button>
+    </div>
+  </div>
   <ul class="product-list" id="products-list">
     {{#each products}}
       <li class="product-item" id={{this.id}}>
@@ -17,15 +30,13 @@
     {{/each}}
   </ul>
 <div class="pagination">
-  {{#if data.prevPage}}
+
     <button id="prev-page" onclick="goToPage('{{data.prevLink}}')">Anterior</button>
-  {{/if}}
+
 
   <span id="page-info">Página {{data.page}} de {{data.totalPages}}</span>
 
-  {{#if data.nextPage}}
-    <button id="next-page"  onclick="goToPage('{{data.prevLink}}')">Siguiente</button>
-  {{/if}}
+    <button id="next-page"  onclick="goToPage('{{data.nextLink}}')">Siguiente</button>
 </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>

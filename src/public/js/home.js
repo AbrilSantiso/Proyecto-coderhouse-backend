@@ -31,16 +31,6 @@ socket.on("nuevo-producto", (product) => {
   let productThumbnails = document.createElement("div");
   productThumbnails.classList.add("product-thumbnails");
 
-  /*  if(product?.thumbnails && product?.thumbnails.length > 0){
-        console.log("entra")
-        product?.thumbnails?.forEach((thumbnail) => {
-          let img = document.createElement("img");
-          img.src = thumbnail;
-          img.alt = "Imagen de producto";
-          img.classList.add("thumbnail");
-          productThumbnails.appendChild(img);
-        });
-      }*/
 
   productLi.appendChild(productTitle);
   productLi.appendChild(productDescription);
@@ -107,3 +97,80 @@ socket.on("eliminar-producto", (id) => {
     console.log(`No se encontró el producto con ID: ${id}`);
   }
 });
+
+const goToPage = async(url) =>{
+ await fetch(url,{ headers: {
+  "Content-Type": "application/json",
+},} )
+    .then(response => response.json() )
+    .then(data => {
+      console.log(data)
+      updateProductList(data.result);
+    })
+    .catch(error => {
+      console.error('Error al cargar los productos:', error);
+    });
+}
+
+const filterByPrice = async (sort)=>{
+  await fetch(`http://localhost:8080/api/products?sort=${sort}`,{ headers: {
+    "Content-Type": "application/json",
+  },} )
+      .then(response => response.json() )
+      .then(data => {
+        updateProductList(data.result);
+      })
+      .catch(error => {
+        console.error('Error al cargar los productos:', error);
+      });
+  }
+
+  const filterByCategory = async (category)=>{
+    await fetch(`http://localhost:8080/api/products?category=${category}`,{ headers: {
+      "Content-Type": "application/json",
+    },} )
+        .then(response => response.json() )
+        .then(data => {
+          updateProductList(data.result);
+        })
+        .catch(error => {
+          console.error('Error al cargar los productos:', error);
+        });
+    } 
+
+function updateProductList(data) {
+  const productList = document.getElementById('products-list');
+  const pageInfo = document.getElementById('page-info');
+  
+  productList.innerHTML = '';
+  
+  data.payload.forEach(product => {
+    const item = document.createElement('li');
+    item.className = 'product-item';
+    item.id = product.id;
+    
+    item.innerHTML = `
+      <h3 class="product-title">${product.title}</h3>
+      <p class="product-description"><strong>${product.description}</strong></p>
+      <p class="product-price">Precio: $${product.price}</p>
+      <p class="product-stock">Stock: ${product.stock} unidades</p>
+      <div class="product-thumbnails">
+        ${product.thumbnails.map(thumbnail => `<img src="${thumbnail}" alt="Imagen de producto" class="thumbnail" />`).join('')}
+      </div>
+    `;
+    
+    productList.appendChild(item);
+  });
+  
+  pageInfo.textContent = `Página ${data.page} de ${data.totalPages}`;
+  
+  document.getElementById('prev-page').style.display = data.prevPage ? 'inline' : 'none';
+  document.getElementById('next-page').style.display = data.nextPage ? 'inline' : 'none';
+
+  if (data.prevPage) {
+    document.getElementById('prev-page').onclick = () => goToPage(data.prevLink);
+  }
+  if (data.nextPage) {
+    document.getElementById('next-page').onclick = () => goToPage(data.nextLink);
+  }
+}

@@ -8,15 +8,25 @@ const router = Router();
 export default (io) => {
   router.get("/", async (req, res) => {
     let products;
-   const {limit, page, sort, query} = req.query
-   console.log(limit)
+   const {limit, page, sort, category} = req.query
     try {
-      products = await ProductsManager.getProducts(page, limit, sort === "asc" ? {price: 1}: {price: -1}, query);
+      products = await ProductsManager.getProducts(page, limit, sort === "asc" ? {price: 1}: {price: -1}, category ? {category: category}: {});
     } catch (error) {
       res.setHeader("Content-Type", "application/json");
-      return res.status(500).json({
-        error: `No fue posible obtener los productos debido a un error inesperado en el servidor. Intentelo más tarde`,
-        detalle: `${error.message}`,
+      let result = {
+        status: "error",
+        payload: null,
+        totalPages: 0,
+        prevPage: null,
+        nextPage: null,
+        page: null,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevLink: null,
+        nextLink: null,
+      };
+      res.setHeader("Content-Type", "application/json");
+      return res.status(500).json({ result: { ...result, error: error.message }
       });
     }
    
@@ -29,8 +39,8 @@ export default (io) => {
       page: products.page,
       hasPrevPage: products.hasPrevPage,
       hasNextPage: products.hasNextPage,
-      prevLink: products.hasPrevPage ? `http://localhost:8080/products?page=${products.prevPage}` : null,
-      nextLink: products.hasNextPage ? `http://localhost:8080/products?page=${products.nextPage}` : null,
+      prevLink: products.hasPrevPage ? `http://localhost:8080/api/products?page=${products.prevPage}` : null,
+      nextLink: products.hasNextPage ? `http://localhost:8080/api/products?page=${products.nextPage}` : null,
     }
 
     res.setHeader("Content-Type", "application/json");
