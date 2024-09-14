@@ -2,6 +2,7 @@ import express from 'express';
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import homeRouter from "./routes/home.router.js"
+import cartViewRouter from "./routes/cartView.router.js"
 import realTimeProductsRouter from "./routes/realTimeProducts.router.js"
 import {engine} from "express-handlebars"
 import {Server} from "socket.io"
@@ -20,6 +21,7 @@ app.set("view engine", "handlebars")
 app.set("views", "./src/views")
 app.use("/api/carts", cartsRouter)
 app.use("/products", homeRouter)
+app.use("/cart", cartViewRouter)
 app.use("/realtimeproducts", realTimeProductsRouter)
 
 app.use(express.static('./src/public'));

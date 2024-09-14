@@ -3,6 +3,7 @@ import CartsManager from "../dao/CartsManager2.js";
 import ProductsManager from "../dao/ProductsManager2.js";
 import { isValidObjectId } from 'mongoose';
 
+
 const router = Router();
 
 CartsManager.path = "./src/data/carts.json";
@@ -85,7 +86,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
   
   let products;
   try {
-    products = await ProductsManager.getProducts();
+    products = await ProductsManager.getProducts(undefined, 500);
 
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
@@ -102,7 +103,6 @@ router.post("/:cid/product/:pid", async (req, res) => {
       .json({ error: `No existe ningún producto con el id ${cid}` });
   }
 
-  console.log(cart.products)
   const productExistsInCart = cart.products.some((product)=>product.product._id.toHexString() === pid)
   if(productExistsInCart){
     cart.products = cart.products.map((product)=>product.product._id.toHexString()  === pid ? {...product, quantity:product.quantity +1}: product)

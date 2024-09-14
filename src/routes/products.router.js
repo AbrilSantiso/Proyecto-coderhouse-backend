@@ -10,7 +10,7 @@ export default (io) => {
     let products;
    const {limit, page, sort, category} = req.query
     try {
-      products = await ProductsManager.getProducts(page, limit, sort === "asc" ? {price: 1}: {price: -1}, category ? {category: category}: {});
+      products = await ProductsManager.getProducts(page, limit, sort ? (sort === "asc" ? {price: 1}: {price: -1}): {}, category ? {category: category}: {});
     } catch (error) {
       res.setHeader("Content-Type", "application/json");
       let result = {
@@ -224,7 +224,6 @@ export default (io) => {
 
     try {
       let result = await ProductsManager.deleteProduct(id);
-      console.log(result)
       if (result !== null) {
         // Si el producto se elimina con exito vamos a emitir un evento para que se actualicen los productos en tiempo real sin el producto eliminado
         io.emit("eliminar-producto", id);

@@ -67,7 +67,6 @@ const deleteProduct = async (id) => {
 }
 
 socket.on("nuevo-producto", (product) => {
-  console.log("resuenaaa");
   let productLi = document.createElement("li");
   productLi.classList.add("product-item");
 
@@ -119,8 +118,7 @@ socket.on("nuevo-producto", (product) => {
 
 socket.on("modificar-producto", (product, id) => {
   const productLi = document.getElementById(id);
-  console.log(productLi);
-  console.log(product);
+
   productLi.innerHTML = "";
   // Título del producto
   let productTitle = document.createElement("h3");

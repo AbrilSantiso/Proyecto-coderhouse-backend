@@ -14,6 +14,9 @@
       <button class="filter-button" id="category-indumentaria" onclick="filterByCategory('Indumentaria')">Indumentaria</button>
     </div>
   </div>
+    <a href="/cart/66e37cd4bae80d56bc96ea23" class="cart-button">
+     Ir al Carrito
+    </a>
   <ul class="product-list" id="products-list">
     {{#each products}}
       <li class="product-item" id={{this.id}}>
@@ -26,6 +29,7 @@
             <img src="{{this}}" alt="Imagen de producto" class="thumbnail" />
           {{/each}}
         </div>
+        <button class="add-to-cart-button" onclick="addToCart('{{this.id}}')">Agregar al Carrito</button>
       </li>
     {{/each}}
   </ul>
